@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import Header from "@/app/components/Header";
 import firebaseConfig from "@/app/components/firebaseConfig";
 
@@ -9,19 +9,78 @@ export default function MyApp({ Component, pageProps }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userInformation, setUserInformation] = useState(null);
+    const [error, setError] = useState(null);
 
     // e stands for element and references the form
     const createUser = useCallback((e) => {
+        e.preventDefault();
 
-    }, []);
+        // Assign Email and Password to variables from form
+        const email = e.currentTarget.email.value;
+        const password = e.currentTarget.password.value;
+
+        // Create reference to auth object
+        const auth = getAuth()
+        createUserWithEmailAndPassword(auth,email,password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                // Since the user is true, set logged in
+                setIsLoggedIn(true);
+                // Provide some information about the user via setState
+                setUserInformation(user);
+                // Clear Errors
+                setError(null);
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.warn({error, errorCode, errorMessage});
+                setError(errorMessage);
+
+            });
+    }, [setError, setIsLoggedIn, setUserInformation]);
 
     const loginUser = useCallback((e) => {
+        e.preventDefault();
 
-    }, []);
+        //  Assign Email and Password to Variables from form
+        const email = e.currentTarget.email.value;
+        const password = e.currentTarget.password.value;
+
+        const auth = getAuth()
+        signInWithEmailAndPassword(auth,email,password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                // Since the user is true, set logged in
+                setIsLoggedIn(true);
+                // Provide some information about the user via setState
+                setUserInformation(user);
+                // Clear Errors
+                setError(null);
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.warn({error, errorCode, errorMessage});
+                setError(errorMessage);
+            });
+
+    }, [setError, setIsLoggedIn, setUserInformation]);
 
     const logoutUser = useCallback((e) => {
-
-    }, []);
+        const auth = getAuth();
+        signOut(auth)
+            .then(() => {
+                setUserInformation(null);
+                setIsLoggedIn(false);
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.warn({error, errorCode, errorMessage});
+                setError(errorMessage);
+            });
+    }, [setError, setIsLoggedIn, setUserInformation]);
 
     // Initialize Firebase
     useEffect(() => {
@@ -56,7 +115,7 @@ export default function MyApp({ Component, pageProps }) {
     
     return (
         <>
-            <Header/>
+            <Header isLoggedIn={isLoggedIn} logoutUser={logoutUser}/>
             <Component
                 {...pageProps}
                 createUser = {createUser}
@@ -64,6 +123,7 @@ export default function MyApp({ Component, pageProps }) {
                 loginUser = {loginUser}
                 userInformation={userInformation}
             />
+            <p>{error}</p>
         </>
     );
 }

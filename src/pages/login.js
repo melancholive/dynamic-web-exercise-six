@@ -11,7 +11,6 @@ export default function Login({ isLoggedIn, loginUser }){
     
     return (
         <main>
-            <h1>Login</h1>
             <LoginForm loginUser={loginUser}/>
         </main>
     );

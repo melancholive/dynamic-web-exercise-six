@@ -9,7 +9,7 @@ const CreateUserForm = ({ createUser }) => {
                 <input type="email" name="email"/>
 
                 <label htmlFor="pass">Password</label>
-                <input type="password" name="pass"/>
+                <input type="password" name="password"/>
 
                 <button type="submit">Create User</button>
             </form>

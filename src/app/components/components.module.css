@@ -20,6 +20,10 @@
     max-width: 375px;
 }
 
+.Form button {
+    margin-top: 10px;
+}  
+
 .UserProfile {
     border: 1px solid black;
     border-radius: 4px;
